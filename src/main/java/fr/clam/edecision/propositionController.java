@@ -1,7 +1,12 @@
 package fr.clam.edecision;
 
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +29,7 @@ public class propositionController {
         return (List<propositionEntity>) repositoryProposition.findAll();
     }
 
-    @PostMapping("/equipe")
+    @PostMapping("/proposition")
     propositionEntity newProposition(@RequestBody propositionEntity newProposition) {
         return repositoryProposition.save(newProposition);
     }
@@ -121,5 +126,28 @@ public class propositionController {
     @DeleteMapping("/propositionsCreateurs/{id}")
     void deletePropositionEquipe(@PathVariable("id") UUID id) {
         proposition_equipeRepository.deleteById(id);
+    }
+    @GetMapping("/propositionsMembre/{uuidMembre}")
+    List<proposition_equipeEntity> allPropositionsMembre(@PathVariable("uuidMembre") UUID uuidMembre) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<List<UUID>> response = restTemplate.exchange(
+                "http://localhost/teamsmembre/{uuidMembre}",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<UUID>>() {},
+                uuidMembre
+        );
+
+        List<UUID> uuidEquipes = response.getBody();
+
+        List<proposition_equipeEntity> propositions = new ArrayList<>();
+        assert uuidEquipes != null;
+        for (UUID uuidEquipe : uuidEquipes) {
+            List<proposition_equipeEntity> propositionsEquipe = proposition_equipeRepository.findByUuidEquipe(uuidEquipe);
+            propositions.addAll(propositionsEquipe);
+        }
+
+        return propositions;
     }
 }
