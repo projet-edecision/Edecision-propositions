@@ -118,7 +118,7 @@ public class propositionController {
         return proposition_equipeRepository.save(newPropositionEquipe);
     }
 
-    @DeleteMapping("/propositionsCreateurs/{id}")
+    @DeleteMapping("/propositionsEquipes/{id}")
     void deletePropositionEquipe(@PathVariable("id") UUID id) {
         proposition_equipeRepository.deleteById(id);
     }
