@@ -4,6 +4,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.Map;
+import java.util.HashMap;
+
 
 @RestController
 public class propositionController {
@@ -22,6 +25,24 @@ public class propositionController {
     @GetMapping("/propositions")
     List<propositionEntity> allPropositions() {
         return (List<propositionEntity>) repositoryProposition.findAll();
+    }
+
+    @GetMapping("/propositions/{id}")
+    propositionEntity proposition(@PathVariable UUID id) {  
+        propositionEntity proposition = repositoryProposition.findById(id)
+                .orElseThrow(() -> new propositionNotFoundException(id));
+        String stateString = mapStateToString(proposition.getState());
+        proposition.setState(stateString);
+        return proposition;
+    }
+            
+    private String mapStateToString(String state) {
+        Map<String, String> stateMap = new HashMap<>();
+        stateMap.put("0", "En attente");
+        stateMap.put("1", "En cours de vote");
+        stateMap.put("2", "Terminé");
+            
+        return stateMap.getOrDefault(state, "État inconnu");
     }
 
     @PostMapping("/equipe")
