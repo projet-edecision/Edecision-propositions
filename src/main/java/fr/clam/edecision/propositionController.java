@@ -45,7 +45,7 @@ public class propositionController {
         return stateMap.getOrDefault(state, "État inconnu");
     }
 
-    @PostMapping("/equipe")
+    @PostMapping("/propositions")
     propositionEntity newProposition(@RequestBody propositionEntity newProposition) {
         return repositoryProposition.save(newProposition);
     }
